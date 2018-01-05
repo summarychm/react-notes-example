@@ -44,6 +44,22 @@ class Notes extends React.Component {
 
 
     }
+    //删除笔记
+    destroyEntity=(entity)=>{
+        const _entities=this.state.entities.filter((_entity)=>{
+            return _entity.$loki!==entity.$loki;
+        })
+        this.setState({
+            entities:_entities
+        });
+        loadCollection('notes')
+            .then((collection)=>{
+                collection.remove(entity);
+                db.saveDatabase()
+
+        })
+    }
+
 
     render() {
         //localStorage中笔记集合对象
@@ -55,6 +71,7 @@ class Notes extends React.Component {
             return <Note
                 key={ entity.$loki }
                 entity={ entity }
+                destroyEntity={this.destroyEntity}
             />
         });
         return (
@@ -70,9 +87,12 @@ class Notes extends React.Component {
                 </button>
                 <div className="ui divided items">
                     {noteItems}
-                    <span className="ui small disabled header">
-                        还没有笔记,请按下"添加笔记"按钮.
-                    </span>
+                    {
+                        !entitys.length &&
+                        <span className="ui small disabled header">
+                            还没有笔记,请按下"添加笔记"按钮.
+                        </span>
+                    }
                 </div>
             </div>
         )
